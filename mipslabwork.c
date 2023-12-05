@@ -23,6 +23,10 @@
 #define PIXEL 10
 #define PAGES 2
 
+int snakeY = 10; 
+int snakeX = 10; 
+
+
 int mytime = 0x5957;
 
 char textstring[] = "text, more text, and even more text!";
@@ -52,6 +56,7 @@ void labinit( void )
   T2CON = 0x8070;
   return;
 }
+
 /* Version 2
 void labinit( void )
 {
@@ -74,6 +79,16 @@ void labinit( void )
   return;
 }
 */
+
+int get_snake_head_position() {
+  // Beräkna vilken "rad" i den virtuella displayen ormens huvud befinner sig på
+  int row_in_display = snakeY / PIXEL;
+
+  // Beräkna och returnera den linjära positionen av ormens huvud i char-arrayen
+  int head_position = snakeX + row_in_display * 32;
+  return head_position;
+}
+
 
 
 
