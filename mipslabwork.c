@@ -12,7 +12,16 @@
 
 #include <stdint.h>   /* Declarations of uint_32 and the like */
 #include <pic32mx.h>  /* Declarations of system-specific addresses etc */
+#include <stdlib.h> /* Declaration of stand. library for C --> header file*/
 #include "mipslab.h"  /* Declatations for these labs */
+
+/* Define size of display/mips display*/
+
+#define HEIGHT 32
+#define WIDTH 128
+#define size HEIGHT*WIDTH
+#define PIXEL 10
+#define PAGES 2
 
 int mytime = 0x5957;
 
@@ -27,16 +36,45 @@ void user_isr( void )
 /* Lab-specific initialization goes here */
 void labinit( void )
 {
+  volatile int* trise = (volatile int*) 0xbf886100;
+  *trise &= ~0xff;
+  // volatile int* trisf = (volatile int*) 0xbf886140;
+  // *trisf |= 0x2;
+
+  volatile int* trisd = (volatile int*) 0xbf8860C0;
+  *trisd |= 0xfe0;
+
+  volatile int* porte = (volatile int*) 0xbf886110;
+  // volatile int* portf = (volatile int*) 0xbf886150;
+  *porte = 0;
+  TMR2 = 0;
+  PR2 = (80000000/256) / 10;
+  T2CON = 0x8070;
   return;
 }
-
-/* This function is called repetitively from the main program */
-void labwork( void )
+/* Version 2
+void labinit( void )
 {
-  delay( 1000 );
-  time2string( textstring, mytime );
-  display_string( 3, textstring );
-  display_update();
-  tick( &mytime );
-  display_image(96, icon);
+    volatile int trisE = (volatile int*) 0xbf886100;
+    *trisE &= ~(0xff);
+    portE &= ~(0xff);
+
+    TRISD = 0x0fe0; //0000 1111 1110 0000 -> s�tter bits fr�n 5 till 11 som input
+
+
+    T2CON = 0x70;
+    PR2 = (80000000/256)/10;  //0.1/(1/80000000)/256;
+    TMR2 = 0;
+    T2CONSET = 0x8000;
+
+    IEC(0) = 0x100;
+    IPC(2) = 0x4;
+    enable_interrupt();
+
+  return;
 }
+*/
+
+
+
+
